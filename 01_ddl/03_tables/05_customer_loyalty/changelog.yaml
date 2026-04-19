@@ -1,0 +1,443 @@
+databaseChangeLog:
+  - changeSet:
+      id: 22-create-customer-category
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: customer_category
+            columns:
+              - column:
+                  name: customer_category_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: category_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: category_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 23-create-benefit-type
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: benefit_type
+            columns:
+              - column:
+                  name: benefit_type_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: benefit_code
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: benefit_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: benefit_description
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 24-create-loyalty-program
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: loyalty_program
+            columns:
+              - column:
+                  name: loyalty_program_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: airline_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_loyalty_program_airline
+                    references: airline(airline_id)
+              - column:
+                  name: default_currency_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_loyalty_program_currency
+                    references: currency(currency_id)
+              - column:
+                  name: program_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: program_name
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiration_months
+                  type: integer
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 25-create-loyalty-tier
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: loyalty_tier
+            columns:
+              - column:
+                  name: loyalty_tier_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: loyalty_program_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_loyalty_tier_program
+                    references: loyalty_program(loyalty_program_id)
+              - column:
+                  name: tier_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tier_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: priority_level
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: required_miles
+                  type: integer
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 26-create-customer
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: customer
+            columns:
+              - column:
+                  name: customer_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: airline_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_customer_airline
+                    references: airline(airline_id)
+              - column:
+                  name: person_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_customer_person
+                    references: person(person_id)
+              - column:
+                  name: customer_category_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_customer_category
+                    references: customer_category(customer_category_id)
+              - column:
+                  name: customer_since
+                  type: date
+                  defaultValueComputed: current_date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 27-create-loyalty-account
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: loyalty_account
+            columns:
+              - column:
+                  name: loyalty_account_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_loyalty_account_customer
+                    references: customer(customer_id)
+              - column:
+                  name: loyalty_program_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_loyalty_account_program
+                    references: loyalty_program(loyalty_program_id)
+              - column:
+                  name: account_number
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: opened_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 28-create-loyalty-account-tier
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: loyalty_account_tier
+            columns:
+              - column:
+                  name: loyalty_account_tier_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: loyalty_account_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_lat_account
+                    references: loyalty_account(loyalty_account_id)
+              - column:
+                  name: loyalty_tier_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_lat_tier
+                    references: loyalty_tier(loyalty_tier_id)
+              - column:
+                  name: assigned_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: timestamptz
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 29-create-miles-transaction
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: miles_transaction
+            columns:
+              - column:
+                  name: miles_transaction_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: loyalty_account_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_miles_transaction_account
+                    references: loyalty_account(loyalty_account_id)
+              - column:
+                  name: transaction_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: miles_delta
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: occurred_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reference_code
+                  type: varchar(60)
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 30-create-customer-benefit
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: customer_benefit
+            columns:
+              - column:
+                  name: customer_benefit_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_customer_benefit_customer
+                    references: customer(customer_id)
+              - column:
+                  name: benefit_type_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_customer_benefit_type
+                    references: benefit_type(benefit_type_id)
+              - column:
+                  name: granted_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: timestamptz
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

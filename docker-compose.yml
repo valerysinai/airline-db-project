@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: airline_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - airline_network
+
+  liquibase:
+    image: liquibase/liquibase:4.27
+    container_name: airline_liquibase
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./:/liquibase/changelog
+    entrypoint: ["sleep", "infinity"]
+    networks:
+      - airline_network
+
+volumes:
+  postgres_data:
+
+networks:
+  airline_network:
+    driver: bridge

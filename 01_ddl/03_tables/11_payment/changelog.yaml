@@ -1,0 +1,256 @@
+databaseChangeLog:
+  - changeSet:
+      id: 67-create-payment-status
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: payment_status
+            columns:
+              - column:
+                  name: payment_status_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: status_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 68-create-payment-method
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: payment_method
+            columns:
+              - column:
+                  name: payment_method_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: method_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: method_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 69-create-payment
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: payment
+            columns:
+              - column:
+                  name: payment_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sale_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_sale
+                    references: sale(sale_id)
+              - column:
+                  name: payment_status_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_status
+                    references: payment_status(payment_status_id)
+              - column:
+                  name: payment_method_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_method
+                    references: payment_method(payment_method_id)
+              - column:
+                  name: currency_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_currency
+                    references: currency(currency_id)
+              - column:
+                  name: payment_reference
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: amount
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: authorized_at
+                  type: timestamptz
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 70-create-payment-transaction
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: payment_transaction
+            columns:
+              - column:
+                  name: payment_transaction_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: payment_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_transaction_payment
+                    references: payment(payment_id)
+              - column:
+                  name: transaction_reference
+                  type: varchar(60)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: transaction_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: transaction_amount
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: processed_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider_message
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 71-create-refund
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: refund
+            columns:
+              - column:
+                  name: refund_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: payment_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_refund_payment
+                    references: payment(payment_id)
+              - column:
+                  name: refund_reference
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: amount
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: requested_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: processed_at
+                  type: timestamptz
+              - column:
+                  name: refund_reason
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

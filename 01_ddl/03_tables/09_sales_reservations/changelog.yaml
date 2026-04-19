@@ -1,0 +1,505 @@
+databaseChangeLog:
+  - changeSet:
+      id: 52-create-reservation-status
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: reservation_status
+            columns:
+              - column:
+                  name: reservation_status_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: status_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 53-create-sale-channel
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: sale_channel
+            columns:
+              - column:
+                  name: sale_channel_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: channel_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: channel_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 54-create-ticket-status
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: ticket_status
+            columns:
+              - column:
+                  name: ticket_status_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: status_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 55-create-reservation
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: reservation
+            columns:
+              - column:
+                  name: reservation_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: booked_by_customer_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_reservation_customer
+                    references: customer(customer_id)
+              - column:
+                  name: reservation_status_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reservation_status
+                    references: reservation_status(reservation_status_id)
+              - column:
+                  name: sale_channel_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reservation_channel
+                    references: sale_channel(sale_channel_id)
+              - column:
+                  name: reservation_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: booked_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: timestamptz
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 56-create-reservation-passenger
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: reservation_passenger
+            columns:
+              - column:
+                  name: reservation_passenger_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: reservation_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reservation_passenger_reservation
+                    references: reservation(reservation_id)
+              - column:
+                  name: person_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reservation_passenger_person
+                    references: person(person_id)
+              - column:
+                  name: passenger_sequence_no
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: passenger_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 57-create-sale
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: sale
+            columns:
+              - column:
+                  name: sale_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: reservation_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_sale_reservation
+                    references: reservation(reservation_id)
+              - column:
+                  name: currency_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_sale_currency
+                    references: currency(currency_id)
+              - column:
+                  name: sale_code
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: sold_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: external_reference
+                  type: varchar(50)
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 58-create-ticket
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: ticket
+            columns:
+              - column:
+                  name: ticket_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sale_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ticket_sale
+                    references: sale(sale_id)
+              - column:
+                  name: reservation_passenger_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ticket_passenger
+                    references: reservation_passenger(reservation_passenger_id)
+              - column:
+                  name: fare_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ticket_fare
+                    references: fare(fare_id)
+              - column:
+                  name: ticket_status_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ticket_status
+                    references: ticket_status(ticket_status_id)
+              - column:
+                  name: ticket_number
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: issued_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 59-create-ticket-segment
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: ticket_segment
+            columns:
+              - column:
+                  name: ticket_segment_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: ticket_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ticket_segment_ticket
+                    references: ticket(ticket_id)
+              - column:
+                  name: flight_segment_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ticket_segment_flight
+                    references: flight_segment(flight_segment_id)
+              - column:
+                  name: segment_sequence_no
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fare_basis_code
+                  type: varchar(20)
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 60-create-seat-assignment
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: seat_assignment
+            columns:
+              - column:
+                  name: seat_assignment_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: ticket_segment_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: flight_segment_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: aircraft_seat_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_seat_assignment_seat
+                    references: aircraft_seat(aircraft_seat_id)
+              - column:
+                  name: assigned_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assignment_source
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 61-create-baggage
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: baggage
+            columns:
+              - column:
+                  name: baggage_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: ticket_segment_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_baggage_ticket_segment
+                    references: ticket_segment(ticket_segment_id)
+              - column:
+                  name: baggage_tag
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: baggage_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: baggage_status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: weight_kg
+                  type: numeric(6,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: checked_at
+                  type: timestamptz
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

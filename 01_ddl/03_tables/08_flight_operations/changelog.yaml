@@ -1,0 +1,397 @@
+databaseChangeLog:
+  - changeSet:
+      id: 45-create-flight-status
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: flight_status
+            columns:
+              - column:
+                  name: flight_status_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: status_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 46-create-delay-reason-type
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: delay_reason_type
+            columns:
+              - column:
+                  name: delay_reason_type_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: reason_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: reason_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 47-create-fare-class
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: fare_class
+            columns:
+              - column:
+                  name: fare_class_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: cabin_class_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fare_class_cabin
+                    references: cabin_class(cabin_class_id)
+              - column:
+                  name: fare_class_code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: fare_class_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: is_refundable_by_default
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 48-create-fare
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: fare
+            columns:
+              - column:
+                  name: fare_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: airline_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fare_airline
+                    references: airline(airline_id)
+              - column:
+                  name: origin_airport_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fare_origin_airport
+                    references: airport(airport_id)
+              - column:
+                  name: destination_airport_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fare_destination_airport
+                    references: airport(airport_id)
+              - column:
+                  name: fare_class_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fare_class
+                    references: fare_class(fare_class_id)
+              - column:
+                  name: currency_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fare_currency
+                    references: currency(currency_id)
+              - column:
+                  name: fare_code
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: base_amount
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: valid_from
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: valid_to
+                  type: date
+              - column:
+                  name: baggage_allowance_qty
+                  type: integer
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: change_penalty_amount
+                  type: numeric(12,2)
+              - column:
+                  name: refund_penalty_amount
+                  type: numeric(12,2)
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 49-create-flight
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: flight
+            columns:
+              - column:
+                  name: flight_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: airline_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_flight_airline
+                    references: airline(airline_id)
+              - column:
+                  name: aircraft_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_flight_aircraft
+                    references: aircraft(aircraft_id)
+              - column:
+                  name: flight_status_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_flight_status
+                    references: flight_status(flight_status_id)
+              - column:
+                  name: flight_number
+                  type: varchar(12)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 50-create-flight-segment
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: flight_segment
+            columns:
+              - column:
+                  name: flight_segment_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: flight_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_flight_segment_flight
+                    references: flight(flight_id)
+              - column:
+                  name: origin_airport_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_flight_segment_origin
+                    references: airport(airport_id)
+              - column:
+                  name: destination_airport_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_flight_segment_destination
+                    references: airport(airport_id)
+              - column:
+                  name: segment_number
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: scheduled_departure_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: scheduled_arrival_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: actual_departure_at
+                  type: timestamptz
+              - column:
+                  name: actual_arrival_at
+                  type: timestamptz
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 51-create-flight-delay
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: flight_delay
+            columns:
+              - column:
+                  name: flight_delay_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: flight_segment_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_flight_delay_segment
+                    references: flight_segment(flight_segment_id)
+              - column:
+                  name: delay_reason_type_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_flight_delay_reason
+                    references: delay_reason_type(delay_reason_type_id)
+              - column:
+                  name: reported_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: delay_minutes
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

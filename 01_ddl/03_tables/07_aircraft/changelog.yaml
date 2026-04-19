@@ -1,0 +1,422 @@
+databaseChangeLog:
+  - changeSet:
+      id: 36-create-aircraft-manufacturer
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: aircraft_manufacturer
+            columns:
+              - column:
+                  name: aircraft_manufacturer_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: manufacturer_name
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 37-create-aircraft-model
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: aircraft_model
+            columns:
+              - column:
+                  name: aircraft_model_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: aircraft_manufacturer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_aircraft_model_manufacturer
+                    references: aircraft_manufacturer(aircraft_manufacturer_id)
+              - column:
+                  name: model_code
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: model_name
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_range_km
+                  type: integer
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 38-create-cabin-class
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: cabin_class
+            columns:
+              - column:
+                  name: cabin_class_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: class_code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: class_name
+                  type: varchar(60)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 39-create-aircraft
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: aircraft
+            columns:
+              - column:
+                  name: aircraft_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: airline_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_aircraft_airline
+                    references: airline(airline_id)
+              - column:
+                  name: aircraft_model_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_aircraft_model
+                    references: aircraft_model(aircraft_model_id)
+              - column:
+                  name: registration_number
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: serial_number
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: in_service_on
+                  type: date
+              - column:
+                  name: retired_on
+                  type: date
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 40-create-aircraft-cabin
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: aircraft_cabin
+            columns:
+              - column:
+                  name: aircraft_cabin_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: aircraft_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_aircraft_cabin_aircraft
+                    references: aircraft(aircraft_id)
+              - column:
+                  name: cabin_class_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_aircraft_cabin_class
+                    references: cabin_class(cabin_class_id)
+              - column:
+                  name: cabin_code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deck_number
+                  type: smallint
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 41-create-aircraft-seat
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: aircraft_seat
+            columns:
+              - column:
+                  name: aircraft_seat_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: aircraft_cabin_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_aircraft_seat_cabin
+                    references: aircraft_cabin(aircraft_cabin_id)
+              - column:
+                  name: seat_row_number
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: seat_column_code
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_window
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_aisle
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_exit_row
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 42-create-maintenance-provider
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: maintenance_provider
+            columns:
+              - column:
+                  name: maintenance_provider_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: address_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_maintenance_provider_address
+                    references: address(address_id)
+              - column:
+                  name: provider_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: contact_name
+                  type: varchar(120)
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 43-create-maintenance-type
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: maintenance_type
+            columns:
+              - column:
+                  name: maintenance_type_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: type_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: type_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 44-create-maintenance-event
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: maintenance_event
+            columns:
+              - column:
+                  name: maintenance_event_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: aircraft_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_maintenance_event_aircraft
+                    references: aircraft(aircraft_id)
+              - column:
+                  name: maintenance_type_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_maintenance_event_type
+                    references: maintenance_type(maintenance_type_id)
+              - column:
+                  name: maintenance_provider_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_maintenance_event_provider
+                    references: maintenance_provider(maintenance_provider_id)
+              - column:
+                  name: started_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: completed_at
+                  type: timestamptz
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

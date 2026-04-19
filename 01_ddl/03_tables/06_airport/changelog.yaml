@@ -1,0 +1,241 @@
+databaseChangeLog:
+  - changeSet:
+      id: 31-create-airport
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: airport
+            columns:
+              - column:
+                  name: airport_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: address_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_airport_address
+                    references: address(address_id)
+              - column:
+                  name: airport_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: iata_code
+                  type: varchar(3)
+                  constraints:
+                    unique: true
+              - column:
+                  name: icao_code
+                  type: varchar(4)
+                  constraints:
+                    unique: true
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 32-create-terminal
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: terminal
+            columns:
+              - column:
+                  name: terminal_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: airport_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_terminal_airport
+                    references: airport(airport_id)
+              - column:
+                  name: terminal_code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: terminal_name
+                  type: varchar(80)
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 33-create-boarding-gate
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: boarding_gate
+            columns:
+              - column:
+                  name: boarding_gate_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: terminal_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_boarding_gate_terminal
+                    references: terminal(terminal_id)
+              - column:
+                  name: gate_code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 34-create-runway
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: runway
+            columns:
+              - column:
+                  name: runway_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: airport_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_runway_airport
+                    references: airport(airport_id)
+              - column:
+                  name: runway_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: length_meters
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: surface_type
+                  type: varchar(30)
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 35-create-airport-regulation
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: airport_regulation
+            columns:
+              - column:
+                  name: airport_regulation_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: airport_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_airport_regulation_airport
+                    references: airport(airport_id)
+              - column:
+                  name: regulation_code
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: regulation_title
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issuing_authority
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: effective_from
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: effective_to
+                  type: date
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

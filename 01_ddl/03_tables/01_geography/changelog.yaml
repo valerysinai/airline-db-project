@@ -1,0 +1,347 @@
+databaseChangeLog:
+  - changeSet:
+      id: 01-create-time-zone
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: time_zone
+            columns:
+              - column:
+                  name: time_zone_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: time_zone_name
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: utc_offset_minutes
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 02-create-continent
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: continent
+            columns:
+              - column:
+                  name: continent_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: continent_code
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: continent_name
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 03-create-currency
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: currency
+            columns:
+              - column:
+                  name: currency_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: iso_currency_code
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: currency_name
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: currency_symbol
+                  type: varchar(8)
+              - column:
+                  name: minor_units
+                  type: smallint
+                  defaultValueNumeric: 2
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 04-create-country
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: country
+            columns:
+              - column:
+                  name: country_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: continent_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_country_continent
+                    references: continent(continent_id)
+              - column:
+                  name: iso_alpha2
+                  type: varchar(2)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: iso_alpha3
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: country_name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 05-create-state-province
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: state_province
+            columns:
+              - column:
+                  name: state_province_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: country_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_state_country
+                    references: country(country_id)
+              - column:
+                  name: state_code
+                  type: varchar(10)
+              - column:
+                  name: state_name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 06-create-city
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: city
+            columns:
+              - column:
+                  name: city_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: state_province_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_city_state
+                    references: state_province(state_province_id)
+              - column:
+                  name: time_zone_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_city_timezone
+                    references: time_zone(time_zone_id)
+              - column:
+                  name: city_name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 07-create-district
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: district
+            columns:
+              - column:
+                  name: district_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: city_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_district_city
+                    references: city(city_id)
+              - column:
+                  name: district_name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 08-create-address
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: address
+            columns:
+              - column:
+                  name: address_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: district_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_address_district
+                    references: district(district_id)
+              - column:
+                  name: address_line_1
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address_line_2
+                  type: varchar(200)
+              - column:
+                  name: postal_code
+                  type: varchar(20)
+              - column:
+                  name: latitude
+                  type: numeric(10,7)
+              - column:
+                  name: longitude
+                  type: numeric(10,7)
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

@@ -1,0 +1,248 @@
+databaseChangeLog:
+  - changeSet:
+      id: 62-create-boarding-group
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: boarding_group
+            columns:
+              - column:
+                  name: boarding_group_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: group_code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: group_name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: sequence_no
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 63-create-check-in-status
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: check_in_status
+            columns:
+              - column:
+                  name: check_in_status_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: status_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 64-create-check-in
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: check_in
+            columns:
+              - column:
+                  name: check_in_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: ticket_segment_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_check_in_ticket_segment
+                    references: ticket_segment(ticket_segment_id)
+              - column:
+                  name: check_in_status_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_check_in_status
+                    references: check_in_status(check_in_status_id)
+              - column:
+                  name: boarding_group_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_check_in_boarding_group
+                    references: boarding_group(boarding_group_id)
+              - column:
+                  name: checked_in_by_user_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_check_in_user
+                    references: user_account(user_account_id)
+              - column:
+                  name: checked_in_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 65-create-boarding-pass
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: boarding_pass
+            columns:
+              - column:
+                  name: boarding_pass_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: check_in_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_boarding_pass_check_in
+                    references: check_in(check_in_id)
+              - column:
+                  name: boarding_pass_code
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: barcode_value
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: issued_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 66-create-boarding-validation
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: boarding_validation
+            columns:
+              - column:
+                  name: boarding_validation_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: boarding_pass_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_boarding_validation_pass
+                    references: boarding_pass(boarding_pass_id)
+              - column:
+                  name: boarding_gate_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_boarding_validation_gate
+                    references: boarding_gate(boarding_gate_id)
+              - column:
+                  name: validated_by_user_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_boarding_validation_user
+                    references: user_account(user_account_id)
+              - column:
+                  name: validated_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: validation_result
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

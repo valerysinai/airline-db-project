@@ -1,0 +1,283 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10-create-person-type
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: person_type
+            columns:
+              - column:
+                  name: person_type_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: type_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: type_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 11-create-document-type
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: document_type
+            columns:
+              - column:
+                  name: document_type_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: type_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: type_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 12-create-contact-type
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: contact_type
+            columns:
+              - column:
+                  name: contact_type_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: type_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: type_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 13-create-person
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: person
+            columns:
+              - column:
+                  name: person_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: person_type_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_person_type
+                    references: person_type(person_type_id)
+              - column:
+                  name: nationality_country_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_person_country
+                    references: country(country_id)
+              - column:
+                  name: first_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: middle_name
+                  type: varchar(80)
+              - column:
+                  name: last_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: second_last_name
+                  type: varchar(80)
+              - column:
+                  name: birth_date
+                  type: date
+              - column:
+                  name: gender_code
+                  type: varchar(1)
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 14-create-person-document
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: person_document
+            columns:
+              - column:
+                  name: person_document_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: person_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_person_document_person
+                    references: person(person_id)
+              - column:
+                  name: document_type_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_person_document_type
+                    references: document_type(document_type_id)
+              - column:
+                  name: issuing_country_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_person_document_country
+                    references: country(country_id)
+              - column:
+                  name: document_number
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issued_on
+                  type: date
+              - column:
+                  name: expires_on
+                  type: date
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 15-create-person-contact
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: person_contact
+            columns:
+              - column:
+                  name: person_contact_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: person_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_person_contact_person
+                    references: person(person_id)
+              - column:
+                  name: contact_type_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_person_contact_type
+                    references: contact_type(contact_type_id)
+              - column:
+                  name: contact_value
+                  type: varchar(180)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_primary
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

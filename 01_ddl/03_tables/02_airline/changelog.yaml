@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: 09-create-airline
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: airline
+            columns:
+              - column:
+                  name: airline_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: home_country_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_airline_country
+                    references: country(country_id)
+              - column:
+                  name: airline_code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: airline_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: iata_code
+                  type: varchar(2)
+                  constraints:
+                    unique: true
+              - column:
+                  name: icao_code
+                  type: varchar(3)
+                  constraints:
+                    unique: true
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

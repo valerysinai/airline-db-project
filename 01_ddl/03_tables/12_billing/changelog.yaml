@@ -1,0 +1,262 @@
+databaseChangeLog:
+  - changeSet:
+      id: 72-create-tax
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: tax
+            columns:
+              - column:
+                  name: tax_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: tax_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: tax_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: rate_percentage
+                  type: numeric(6,3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: effective_from
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: effective_to
+                  type: date
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 73-create-exchange-rate
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: exchange_rate
+            columns:
+              - column:
+                  name: exchange_rate_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: from_currency_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_exchange_rate_from
+                    references: currency(currency_id)
+              - column:
+                  name: to_currency_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_exchange_rate_to
+                    references: currency(currency_id)
+              - column:
+                  name: effective_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rate_value
+                  type: numeric(18,8)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 74-create-invoice-status
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: invoice_status
+            columns:
+              - column:
+                  name: invoice_status_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: status_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status_name
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 75-create-invoice
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: invoice
+            columns:
+              - column:
+                  name: invoice_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sale_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_invoice_sale
+                    references: sale(sale_id)
+              - column:
+                  name: invoice_status_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_invoice_status
+                    references: invoice_status(invoice_status_id)
+              - column:
+                  name: currency_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_invoice_currency
+                    references: currency(currency_id)
+              - column:
+                  name: invoice_number
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: issued_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: due_at
+                  type: timestamptz
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 76-create-invoice-line
+      author: valerysinai
+      changes:
+        - createTable:
+            tableName: invoice_line
+            columns:
+              - column:
+                  name: invoice_line_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: invoice_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_invoice_line_invoice
+                    references: invoice(invoice_id)
+              - column:
+                  name: tax_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_invoice_line_tax
+                    references: tax(tax_id)
+              - column:
+                  name: line_number
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: line_description
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_price
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
