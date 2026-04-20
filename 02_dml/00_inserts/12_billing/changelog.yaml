@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-65-insert-taxes
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO tax (tax_code, tax_name, rate_percentage, effective_from) VALUES
+              ('IVA19',  'IVA 19%',         19.000, '2020-01-01'),
+              ('IVA5',   'IVA 5%',           5.000, '2020-01-01'),
+              ('EXENTO', 'Exento de IVA',    0.000, '2020-01-01'),
+              ('TUA',    'Tasa Uso Aeropuerto', 15.000, '2020-01-01');
+
+  - changeSet:
+      id: dml-66-insert-exchange-rates
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO exchange_rate (from_currency_id, to_currency_id, effective_date, rate_value) VALUES
+              ((SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'COP'), '2026-04-19', 4200.00000000),
+              ((SELECT currency_id FROM currency WHERE iso_currency_code = 'EUR'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'COP'), '2026-04-19', 4500.00000000),
+              ((SELECT currency_id FROM currency WHERE iso_currency_code = 'COP'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), '2026-04-19', 0.00023810);
+
+  - changeSet:
+      id: dml-67-insert-invoice-statuses
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO invoice_status (status_code, status_name) VALUES
+              ('ISSUED',    'Emitida'),
+              ('PAID',      'Pagada'),
+              ('CANCELLED', 'Anulada'),
+              ('OVERDUE',   'Vencida');
+
+  - changeSet:
+      id: dml-68-insert-invoices
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO invoice (sale_id, invoice_status_id, currency_id, invoice_number, issued_at, due_at) VALUES
+              ((SELECT sale_id FROM sale WHERE sale_code = 'SALE-001-2026'), (SELECT invoice_status_id FROM invoice_status WHERE status_code = 'PAID'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'INV-001-2026', now(), now() + interval '30 days'),
+              ((SELECT sale_id FROM sale WHERE sale_code = 'SALE-002-2026'), (SELECT invoice_status_id FROM invoice_status WHERE status_code = 'PAID'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'INV-002-2026', now(), now() + interval '30 days');
+
+  - changeSet:
+      id: dml-69-insert-invoice-lines
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO invoice_line (invoice_id, tax_id, line_number, line_description, quantity, unit_price) VALUES
+              ((SELECT invoice_id FROM invoice WHERE invoice_number = 'INV-001-2026'), (SELECT tax_id FROM tax WHERE tax_code = 'IVA19'), 1, 'Tiquete BOG-MIA Económica Flexible', 1, 350.00),
+              ((SELECT invoice_id FROM invoice WHERE invoice_number = 'INV-001-2026'), (SELECT tax_id FROM tax WHERE tax_code = 'TUA'),   2, 'Tasa de uso aeropuerto',             1, 15.00),
+              ((SELECT invoice_id FROM invoice WHERE invoice_number = 'INV-002-2026'), (SELECT tax_id FROM tax WHERE tax_code = 'IVA19'), 1, 'Tiquete BOG-MIA Económica Estándar', 1, 250.00),
+              ((SELECT invoice_id FROM invoice WHERE invoice_number = 'INV-002-2026'), (SELECT tax_id FROM tax WHERE tax_code = 'TUA'),   2, 'Tasa de uso aeropuerto',             1, 15.00);

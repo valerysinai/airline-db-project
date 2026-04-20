@@ -30,7 +30,6 @@ services:
     entrypoint: ["sleep", "infinity"]
     networks:
       - airline_network
-
 volumes:
   postgres_data:
 

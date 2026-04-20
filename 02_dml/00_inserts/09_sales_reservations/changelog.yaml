@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-48-insert-reservation-statuses
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO reservation_status (status_code, status_name) VALUES
+              ('CONFIRMED', 'Confirmada'),
+              ('PENDING',   'Pendiente'),
+              ('CANCELLED', 'Cancelada'),
+              ('EXPIRED',   'Expirada');
+
+  - changeSet:
+      id: dml-49-insert-sale-channels
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO sale_channel (channel_code, channel_name) VALUES
+              ('WEB',     'Sitio Web'),
+              ('APP',     'Aplicación Móvil'),
+              ('COUNTER', 'Mostrador Aeropuerto'),
+              ('AGENCY',  'Agencia de Viajes');
+
+  - changeSet:
+      id: dml-50-insert-ticket-statuses
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO ticket_status (status_code, status_name) VALUES
+              ('ISSUED',    'Emitido'),
+              ('USED',      'Usado'),
+              ('REFUNDED',  'Reembolsado'),
+              ('CANCELLED', 'Cancelado');
+
+  - changeSet:
+      id: dml-51-insert-reservations
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO reservation (booked_by_customer_id, reservation_status_id, sale_channel_id, reservation_code, booked_at) VALUES
+              ((SELECT customer_id FROM customer WHERE person_id = (SELECT person_id FROM person WHERE first_name = 'Valery' AND last_name = 'Trujillo')), (SELECT reservation_status_id FROM reservation_status WHERE status_code = 'CONFIRMED'), (SELECT sale_channel_id FROM sale_channel WHERE channel_code = 'WEB'), 'RES-001-2026', now()),
+              ((SELECT customer_id FROM customer WHERE person_id = (SELECT person_id FROM person WHERE first_name = 'Carlos' AND last_name = 'Pérez')),    (SELECT reservation_status_id FROM reservation_status WHERE status_code = 'CONFIRMED'), (SELECT sale_channel_id FROM sale_channel WHERE channel_code = 'APP'), 'RES-002-2026', now());
+
+  - changeSet:
+      id: dml-52-insert-reservation-passengers
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO reservation_passenger (reservation_id, person_id, passenger_sequence_no, passenger_type) VALUES
+              ((SELECT reservation_id FROM reservation WHERE reservation_code = 'RES-001-2026'), (SELECT person_id FROM person WHERE first_name = 'Valery' AND last_name = 'Trujillo'), 1, 'ADULT'),
+              ((SELECT reservation_id FROM reservation WHERE reservation_code = 'RES-002-2026'), (SELECT person_id FROM person WHERE first_name = 'Carlos' AND last_name = 'Pérez'),    1, 'ADULT');
+
+  - changeSet:
+      id: dml-53-insert-sales
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO sale (reservation_id, currency_id, sale_code, sold_at) VALUES
+              ((SELECT reservation_id FROM reservation WHERE reservation_code = 'RES-001-2026'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'SALE-001-2026', now()),
+              ((SELECT reservation_id FROM reservation WHERE reservation_code = 'RES-002-2026'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'SALE-002-2026', now());
+
+  - changeSet:
+      id: dml-54-insert-tickets
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO ticket (sale_id, reservation_passenger_id, fare_id, ticket_status_id, ticket_number, issued_at) VALUES
+              ((SELECT sale_id FROM sale WHERE sale_code = 'SALE-001-2026'), (SELECT reservation_passenger_id FROM reservation_passenger WHERE reservation_id = (SELECT reservation_id FROM reservation WHERE reservation_code = 'RES-001-2026') AND passenger_sequence_no = 1), (SELECT fare_id FROM fare WHERE fare_code = 'AV-BOG-MIA-Y'), (SELECT ticket_status_id FROM ticket_status WHERE status_code = 'ISSUED'), 'TKT-0001-2026', now()),
+              ((SELECT sale_id FROM sale WHERE sale_code = 'SALE-002-2026'), (SELECT reservation_passenger_id FROM reservation_passenger WHERE reservation_id = (SELECT reservation_id FROM reservation WHERE reservation_code = 'RES-002-2026') AND passenger_sequence_no = 1), (SELECT fare_id FROM fare WHERE fare_code = 'AV-BOG-MIA-M'), (SELECT ticket_status_id FROM ticket_status WHERE status_code = 'ISSUED'), 'TKT-0002-2026', now());
+
+  - changeSet:
+      id: dml-55-insert-ticket-segments
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO ticket_segment (ticket_id, flight_segment_id, segment_sequence_no) VALUES
+              ((SELECT ticket_id FROM ticket WHERE ticket_number = 'TKT-0001-2026'), (SELECT flight_segment_id FROM flight_segment WHERE flight_id = (SELECT flight_id FROM flight WHERE flight_number = 'AV101' AND service_date = '2026-05-01') AND segment_number = 1), 1),
+              ((SELECT ticket_id FROM ticket WHERE ticket_number = 'TKT-0002-2026'), (SELECT flight_segment_id FROM flight_segment WHERE flight_id = (SELECT flight_id FROM flight WHERE flight_number = 'AV101' AND service_date = '2026-05-01') AND segment_number = 1), 1);
+
+  - changeSet:
+      id: dml-56-insert-baggage
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO baggage (ticket_segment_id, baggage_tag, baggage_type, baggage_status, weight_kg) VALUES
+              ((SELECT ticket_segment_id FROM ticket_segment WHERE ticket_id = (SELECT ticket_id FROM ticket WHERE ticket_number = 'TKT-0001-2026') AND segment_sequence_no = 1), 'BAG-001-2026', 'CHECKED', 'REGISTERED', 23.00),
+              ((SELECT ticket_segment_id FROM ticket_segment WHERE ticket_id = (SELECT ticket_id FROM ticket WHERE ticket_number = 'TKT-0002-2026') AND segment_sequence_no = 1), 'BAG-002-2026', 'CARRY_ON', 'REGISTERED', 8.00);

@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-10-insert-person-types
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO person_type (type_code, type_name) VALUES
+              ('CUSTOMER', 'Cliente'),
+              ('EMPLOYEE', 'Empleado'),
+              ('PASSENGER', 'Pasajero'),
+              ('ADMIN', 'Administrador');
+
+  - changeSet:
+      id: dml-11-insert-document-types
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO document_type (type_code, type_name) VALUES
+              ('CC', 'Cédula de Ciudadanía'),
+              ('PA', 'Pasaporte'),
+              ('CE', 'Cédula de Extranjería'),
+              ('TI', 'Tarjeta de Identidad'),
+              ('NIT', 'NIT');
+
+  - changeSet:
+      id: dml-12-insert-contact-types
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO contact_type (type_code, type_name) VALUES
+              ('EMAIL', 'Correo Electrónico'),
+              ('MOBILE', 'Teléfono Móvil'),
+              ('PHONE', 'Teléfono Fijo'),
+              ('ADDRESS', 'Dirección');
+
+  - changeSet:
+      id: dml-13-insert-persons
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO person (person_type_id, nationality_country_id, first_name, last_name, birth_date, gender_code) VALUES
+              ((SELECT person_type_id FROM person_type WHERE type_code = 'CUSTOMER'), (SELECT country_id FROM country WHERE iso_alpha2 = 'CO'), 'Valery', 'Trujillo', '1998-05-12', 'F'),
+              ((SELECT person_type_id FROM person_type WHERE type_code = 'CUSTOMER'), (SELECT country_id FROM country WHERE iso_alpha2 = 'CO'), 'Carlos', 'Pérez', '1990-03-22', 'M'),
+              ((SELECT person_type_id FROM person_type WHERE type_code = 'EMPLOYEE'), (SELECT country_id FROM country WHERE iso_alpha2 = 'CO'), 'Ana', 'Gómez', '1985-07-15', 'F'),
+              ((SELECT person_type_id FROM person_type WHERE type_code = 'ADMIN'),    (SELECT country_id FROM country WHERE iso_alpha2 = 'US'), 'John', 'Smith', '1980-01-10', 'M'),
+              ((SELECT person_type_id FROM person_type WHERE type_code = 'PASSENGER'),(SELECT country_id FROM country WHERE iso_alpha2 = 'ES'), 'María', 'López', '1995-09-30', 'F');
+
+  - changeSet:
+      id: dml-14-insert-person-documents
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO person_document (person_id, document_type_id, issuing_country_id, document_number, issued_on, expires_on) VALUES
+              ((SELECT person_id FROM person WHERE first_name = 'Valery' AND last_name = 'Trujillo'), (SELECT document_type_id FROM document_type WHERE type_code = 'CC'), (SELECT country_id FROM country WHERE iso_alpha2 = 'CO'), '1075123456', '2015-05-12', '2025-05-12'),
+              ((SELECT person_id FROM person WHERE first_name = 'Carlos' AND last_name = 'Pérez'),    (SELECT document_type_id FROM document_type WHERE type_code = 'CC'), (SELECT country_id FROM country WHERE iso_alpha2 = 'CO'), '1075654321', '2010-03-22', '2030-03-22'),
+              ((SELECT person_id FROM person WHERE first_name = 'Ana'    AND last_name = 'Gómez'),    (SELECT document_type_id FROM document_type WHERE type_code = 'CC'), (SELECT country_id FROM country WHERE iso_alpha2 = 'CO'), '1075987654', '2005-07-15', '2025-07-15'),
+              ((SELECT person_id FROM person WHERE first_name = 'John'   AND last_name = 'Smith'),    (SELECT document_type_id FROM document_type WHERE type_code = 'PA'), (SELECT country_id FROM country WHERE iso_alpha2 = 'US'), 'A12345678',  '2018-01-10', '2028-01-10'),
+              ((SELECT person_id FROM person WHERE first_name = 'María'  AND last_name = 'López'),    (SELECT document_type_id FROM document_type WHERE type_code = 'PA'), (SELECT country_id FROM country WHERE iso_alpha2 = 'ES'), 'ES9876543',  '2019-09-30', '2029-09-30');
+
+  - changeSet:
+      id: dml-15-insert-person-contacts
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO person_contact (person_id, contact_type_id, contact_value, is_primary) VALUES
+              ((SELECT person_id FROM person WHERE first_name = 'Valery' AND last_name = 'Trujillo'), (SELECT contact_type_id FROM contact_type WHERE type_code = 'EMAIL'),  'valery@email.com',  true),
+              ((SELECT person_id FROM person WHERE first_name = 'Carlos' AND last_name = 'Pérez'),    (SELECT contact_type_id FROM contact_type WHERE type_code = 'EMAIL'),  'carlos@email.com',  true),
+              ((SELECT person_id FROM person WHERE first_name = 'Ana'    AND last_name = 'Gómez'),    (SELECT contact_type_id FROM contact_type WHERE type_code = 'MOBILE'), '3001234567',        true),
+              ((SELECT person_id FROM person WHERE first_name = 'John'   AND last_name = 'Smith'),    (SELECT contact_type_id FROM contact_type WHERE type_code = 'EMAIL'),  'john@email.com',    true),
+              ((SELECT person_id FROM person WHERE first_name = 'María'  AND last_name = 'López'),    (SELECT contact_type_id FROM contact_type WHERE type_code = 'MOBILE'), '3109876543',        true);

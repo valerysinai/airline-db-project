@@ -1,49 +1,79 @@
 databaseChangeLog:
-  - includeAll:
-      path: 01_ddl/00_extensions/
+  - include:
+      file: 01_ddl/00_extensions/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/01_geography/
+  - include:
+      file: 01_ddl/03_tables/01_geography/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/02_airline/
+  - include:
+      file: 01_ddl/03_tables/02_airline/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/03_identity/
+  - include:
+      file: 01_ddl/03_tables/03_identity/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/04_security/
+  - include:
+      file: 01_ddl/03_tables/04_security/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/05_customer_loyalty/
+  - include:
+      file: 01_ddl/03_tables/05_customer_loyalty/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/06_airport/
+  - include:
+      file: 01_ddl/03_tables/06_airport/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/07_aircraft/
+  - include:
+      file: 01_ddl/03_tables/07_aircraft/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/08_flight_operations/
+  - include:
+      file: 01_ddl/03_tables/08_flight_operations/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/09_sales_reservations/
+  - include:
+      file: 01_ddl/03_tables/09_sales_reservations/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/10_boarding/
+  - include:
+      file: 01_ddl/03_tables/10_boarding/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/11_payment/
+  - include:
+      file: 01_ddl/03_tables/11_payment/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/03_tables/12_billing/
+  - include:
+      file: 01_ddl/03_tables/12_billing/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 01_ddl/09_indexes/
+  - include:
+      file: 01_ddl/09_indexes/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 03_dcl/00_roles/
+  - include:
+      file: 02_dml/00_inserts/01_geography/changelog.yaml
       relativeToChangelogFile: true
-  - includeAll:
-      path: 03_dcl/01_grants/
+  - include:
+      file: 02_dml/00_inserts/02_airline/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/03_identity/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/04_security/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/05_customer_loyalty/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/06_airport/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/07_aircraft/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/08_flight_operations/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/09_sales_reservations/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/10_boarding/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/11_payment/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 02_dml/00_inserts/12_billing/changelog.yaml
       relativeToChangelogFile: true

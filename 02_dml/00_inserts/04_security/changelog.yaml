@@ -1,0 +1,78 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-16-insert-user-status
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO user_status (status_code, status_name) VALUES
+              ('ACTIVE',    'Activo'),
+              ('INACTIVE',  'Inactivo'),
+              ('SUSPENDED', 'Suspendido'),
+              ('LOCKED',    'Bloqueado');
+
+  - changeSet:
+      id: dml-17-insert-security-roles
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO security_role (role_code, role_name, role_description) VALUES
+              ('ROLE_ADMIN',      'Administrador',    'Acceso total al sistema'),
+              ('ROLE_OPERATIONS', 'Operaciones',      'Acceso operativo a vuelos y reservas'),
+              ('ROLE_READONLY',   'Solo lectura',     'Acceso de consulta sin modificaciones'),
+              ('ROLE_CHECKIN',    'Agente Check-in',  'Acceso al proceso de abordaje');
+
+  - changeSet:
+      id: dml-18-insert-security-permissions
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO security_permission (permission_code, permission_name) VALUES
+              ('PERM_READ_ALL',       'Leer todos los registros'),
+              ('PERM_WRITE_ALL',      'Escribir todos los registros'),
+              ('PERM_DELETE_ALL',     'Eliminar todos los registros'),
+              ('PERM_MANAGE_FLIGHTS', 'Gestionar vuelos'),
+              ('PERM_MANAGE_CHECKIN', 'Gestionar check-in');
+
+  - changeSet:
+      id: dml-19-insert-user-accounts
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO user_account (person_id, user_status_id, username, password_hash) VALUES
+              ((SELECT person_id FROM person WHERE first_name = 'Valery' AND last_name = 'Trujillo'), (SELECT user_status_id FROM user_status WHERE status_code = 'ACTIVE'),    'valery.trujillo', crypt('Pass1234!', gen_salt('bf'))),
+              ((SELECT person_id FROM person WHERE first_name = 'Carlos' AND last_name = 'Pérez'),    (SELECT user_status_id FROM user_status WHERE status_code = 'ACTIVE'),    'carlos.perez',    crypt('Pass1234!', gen_salt('bf'))),
+              ((SELECT person_id FROM person WHERE first_name = 'Ana'    AND last_name = 'Gómez'),    (SELECT user_status_id FROM user_status WHERE status_code = 'ACTIVE'),    'ana.gomez',       crypt('Pass1234!', gen_salt('bf'))),
+              ((SELECT person_id FROM person WHERE first_name = 'John'   AND last_name = 'Smith'),    (SELECT user_status_id FROM user_status WHERE status_code = 'ACTIVE'),    'john.smith',      crypt('Pass1234!', gen_salt('bf'))),
+              ((SELECT person_id FROM person WHERE first_name = 'María'  AND last_name = 'López'),    (SELECT user_status_id FROM user_status WHERE status_code = 'INACTIVE'),  'maria.lopez',     crypt('Pass1234!', gen_salt('bf')));
+
+  - changeSet:
+      id: dml-20-insert-user-roles
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO user_role (user_account_id, security_role_id) VALUES
+              ((SELECT user_account_id FROM user_account WHERE username = 'valery.trujillo'), (SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_ADMIN')),
+              ((SELECT user_account_id FROM user_account WHERE username = 'carlos.perez'),    (SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_OPERATIONS')),
+              ((SELECT user_account_id FROM user_account WHERE username = 'ana.gomez'),       (SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_CHECKIN')),
+              ((SELECT user_account_id FROM user_account WHERE username = 'john.smith'),      (SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_ADMIN')),
+              ((SELECT user_account_id FROM user_account WHERE username = 'maria.lopez'),     (SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_READONLY'));
+
+  - changeSet:
+      id: dml-21-insert-role-permissions
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO role_permission (security_role_id, security_permission_id) VALUES
+              ((SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_ADMIN'),      (SELECT security_permission_id FROM security_permission WHERE permission_code = 'PERM_READ_ALL')),
+              ((SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_ADMIN'),      (SELECT security_permission_id FROM security_permission WHERE permission_code = 'PERM_WRITE_ALL')),
+              ((SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_ADMIN'),      (SELECT security_permission_id FROM security_permission WHERE permission_code = 'PERM_DELETE_ALL')),
+              ((SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_OPERATIONS'), (SELECT security_permission_id FROM security_permission WHERE permission_code = 'PERM_READ_ALL')),
+              ((SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_OPERATIONS'), (SELECT security_permission_id FROM security_permission WHERE permission_code = 'PERM_MANAGE_FLIGHTS')),
+              ((SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_CHECKIN'),    (SELECT security_permission_id FROM security_permission WHERE permission_code = 'PERM_MANAGE_CHECKIN')),
+              ((SELECT security_role_id FROM security_role WHERE role_code = 'ROLE_READONLY'),   (SELECT security_permission_id FROM security_permission WHERE permission_code = 'PERM_READ_ALL'));

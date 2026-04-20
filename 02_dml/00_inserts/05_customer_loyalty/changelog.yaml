@@ -1,0 +1,104 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-22-insert-customer-categories
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO customer_category (category_code, category_name) VALUES
+              ('STANDARD',   'Estándar'),
+              ('PREMIUM',    'Premium'),
+              ('CORPORATE',  'Corporativo'),
+              ('FREQUENT',   'Viajero Frecuente');
+
+  - changeSet:
+      id: dml-23-insert-benefit-types
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO benefit_type (benefit_code, benefit_name, benefit_description) VALUES
+              ('LOUNGE',        'Acceso a sala VIP',       'Acceso a salas VIP en aeropuertos'),
+              ('EXTRA_BAGGAGE', 'Equipaje adicional',      'Pieza de equipaje extra sin costo'),
+              ('PRIORITY',      'Abordaje prioritario',    'Abordaje en primer grupo'),
+              ('UPGRADE',       'Mejora de clase',         'Actualización de clase sin costo adicional');
+
+  - changeSet:
+      id: dml-24-insert-loyalty-programs
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO loyalty_program (airline_id, default_currency_id, program_code, program_name, expiration_months) VALUES
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'COP'), 'LIFEMILES', 'LifeMiles Avianca', 24),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'LA'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'COP'), 'LATAMPASS', 'LATAM Pass',        24),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AA'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'AADVANTAGE','AAdvantage',         36);
+
+  - changeSet:
+      id: dml-25-insert-loyalty-tiers
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO loyalty_tier (loyalty_program_id, tier_code, tier_name, priority_level, required_miles) VALUES
+              ((SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LIFEMILES'), 'BRONZE', 'Bronce', 1, 0),
+              ((SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LIFEMILES'), 'SILVER', 'Plata',  2, 25000),
+              ((SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LIFEMILES'), 'GOLD',   'Oro',    3, 50000),
+              ((SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LATAMPASS'), 'BLACK',  'Black',  1, 0),
+              ((SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LATAMPASS'), 'BLACK+', 'Black+', 2, 30000);
+
+  - changeSet:
+      id: dml-26-insert-customers
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO customer (airline_id, person_id, customer_category_id, customer_since) VALUES
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT person_id FROM person WHERE first_name = 'Valery' AND last_name = 'Trujillo'), (SELECT customer_category_id FROM customer_category WHERE category_code = 'FREQUENT'), '2020-01-01'),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT person_id FROM person WHERE first_name = 'Carlos' AND last_name = 'Pérez'),    (SELECT customer_category_id FROM customer_category WHERE category_code = 'STANDARD'), '2019-06-15'),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'LA'), (SELECT person_id FROM person WHERE first_name = 'María'  AND last_name = 'López'),    (SELECT customer_category_id FROM customer_category WHERE category_code = 'PREMIUM'),  '2021-03-10');
+
+  - changeSet:
+      id: dml-27-insert-loyalty-accounts
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO loyalty_account (customer_id, loyalty_program_id, account_number, opened_at) VALUES
+              ((SELECT customer_id FROM customer WHERE person_id = (SELECT person_id FROM person WHERE first_name = 'Valery' AND last_name = 'Trujillo')), (SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LIFEMILES'), 'LM-0001-2020', now()),
+              ((SELECT customer_id FROM customer WHERE person_id = (SELECT person_id FROM person WHERE first_name = 'Carlos' AND last_name = 'Pérez')),    (SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LIFEMILES'), 'LM-0002-2019', now()),
+              ((SELECT customer_id FROM customer WHERE person_id = (SELECT person_id FROM person WHERE first_name = 'María'  AND last_name = 'López')),    (SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LATAMPASS'), 'LP-0001-2021', now());
+
+  - changeSet:
+      id: dml-28-insert-loyalty-account-tiers
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO loyalty_account_tier (loyalty_account_id, loyalty_tier_id, assigned_at) VALUES
+              ((SELECT loyalty_account_id FROM loyalty_account WHERE account_number = 'LM-0001-2020'), (SELECT loyalty_tier_id FROM loyalty_tier WHERE tier_code = 'GOLD'   AND loyalty_program_id = (SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LIFEMILES')), now()),
+              ((SELECT loyalty_account_id FROM loyalty_account WHERE account_number = 'LM-0002-2019'), (SELECT loyalty_tier_id FROM loyalty_tier WHERE tier_code = 'BRONZE' AND loyalty_program_id = (SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LIFEMILES')), now()),
+              ((SELECT loyalty_account_id FROM loyalty_account WHERE account_number = 'LP-0001-2021'), (SELECT loyalty_tier_id FROM loyalty_tier WHERE tier_code = 'BLACK'  AND loyalty_program_id = (SELECT loyalty_program_id FROM loyalty_program WHERE program_code = 'LATAMPASS')), now());
+
+  - changeSet:
+      id: dml-29-insert-miles-transactions
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO miles_transaction (loyalty_account_id, transaction_type, miles_delta, occurred_at, reference_code) VALUES
+              ((SELECT loyalty_account_id FROM loyalty_account WHERE account_number = 'LM-0001-2020'), 'EARN',   50000, now(), 'REF-001'),
+              ((SELECT loyalty_account_id FROM loyalty_account WHERE account_number = 'LM-0001-2020'), 'REDEEM', -10000, now(), 'REF-002'),
+              ((SELECT loyalty_account_id FROM loyalty_account WHERE account_number = 'LM-0002-2019'), 'EARN',   5000,  now(), 'REF-003'),
+              ((SELECT loyalty_account_id FROM loyalty_account WHERE account_number = 'LP-0001-2021'), 'EARN',   20000, now(), 'REF-004');
+
+  - changeSet:
+      id: dml-30-insert-customer-benefits
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO customer_benefit (customer_id, benefit_type_id, granted_at, expires_at) VALUES
+              ((SELECT customer_id FROM customer WHERE person_id = (SELECT person_id FROM person WHERE first_name = 'Valery' AND last_name = 'Trujillo')), (SELECT benefit_type_id FROM benefit_type WHERE benefit_code = 'LOUNGE'),        now(), now() + interval '1 year'),
+              ((SELECT customer_id FROM customer WHERE person_id = (SELECT person_id FROM person WHERE first_name = 'Valery' AND last_name = 'Trujillo')), (SELECT benefit_type_id FROM benefit_type WHERE benefit_code = 'PRIORITY'),      now(), now() + interval '1 year'),
+              ((SELECT customer_id FROM customer WHERE person_id = (SELECT person_id FROM person WHERE first_name = 'María'  AND last_name = 'López')),    (SELECT benefit_type_id FROM benefit_type WHERE benefit_code = 'EXTRA_BAGGAGE'), now(), now() + interval '6 months');

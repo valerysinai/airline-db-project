@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-42-insert-flight-statuses
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO flight_status (status_code, status_name) VALUES
+              ('SCHEDULED', 'Programado'),
+              ('BOARDING',  'En abordaje'),
+              ('DEPARTED',  'Despegado'),
+              ('LANDED',    'Aterrizado'),
+              ('CANCELLED', 'Cancelado'),
+              ('DELAYED',   'Demorado');
+
+  - changeSet:
+      id: dml-43-insert-delay-reasons
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO delay_reason_type (reason_code, reason_name) VALUES
+              ('WEATHER',    'Condiciones climáticas'),
+              ('TECHNICAL',  'Falla técnica'),
+              ('OPERATIONS', 'Razones operativas'),
+              ('ATC',        'Control de tráfico aéreo');
+
+  - changeSet:
+      id: dml-44-insert-fare-classes
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO fare_class (cabin_class_id, fare_class_code, fare_class_name, is_refundable_by_default) VALUES
+              ((SELECT cabin_class_id FROM cabin_class WHERE class_code = 'ECO'), 'Y', 'Económica Flexible',   true),
+              ((SELECT cabin_class_id FROM cabin_class WHERE class_code = 'ECO'), 'M', 'Económica Estándar',   false),
+              ((SELECT cabin_class_id FROM cabin_class WHERE class_code = 'BUS'), 'C', 'Ejecutiva Flex',       true),
+              ((SELECT cabin_class_id FROM cabin_class WHERE class_code = 'BUS'), 'D', 'Ejecutiva Básica',     false);
+
+  - changeSet:
+      id: dml-45-insert-fares
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO fare (airline_id, origin_airport_id, destination_airport_id, fare_class_id, currency_id, fare_code, base_amount, valid_from, valid_to, baggage_allowance_qty) VALUES
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT airport_id FROM airport WHERE iata_code = 'BOG'), (SELECT airport_id FROM airport WHERE iata_code = 'MIA'), (SELECT fare_class_id FROM fare_class WHERE fare_class_code = 'Y'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'AV-BOG-MIA-Y', 350.00, '2026-01-01', '2026-12-31', 1),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT airport_id FROM airport WHERE iata_code = 'BOG'), (SELECT airport_id FROM airport WHERE iata_code = 'MIA'), (SELECT fare_class_id FROM fare_class WHERE fare_class_code = 'M'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'AV-BOG-MIA-M', 250.00, '2026-01-01', '2026-12-31', 0),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT airport_id FROM airport WHERE iata_code = 'BOG'), (SELECT airport_id FROM airport WHERE iata_code = 'MAD'), (SELECT fare_class_id FROM fare_class WHERE fare_class_code = 'C'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'AV-BOG-MAD-C', 900.00, '2026-01-01', '2026-12-31', 2);
+
+  - changeSet:
+      id: dml-46-insert-flights
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO flight (airline_id, aircraft_id, flight_status_id, flight_number, service_date) VALUES
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5200'), (SELECT flight_status_id FROM flight_status WHERE status_code = 'SCHEDULED'), 'AV101', '2026-05-01'),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5201'), (SELECT flight_status_id FROM flight_status WHERE status_code = 'SCHEDULED'), 'AV201', '2026-05-01'),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'LA'), (SELECT aircraft_id FROM aircraft WHERE registration_number = 'CC-BAA'),  (SELECT flight_status_id FROM flight_status WHERE status_code = 'SCHEDULED'), 'LA301', '2026-05-02');
+
+  - changeSet:
+      id: dml-47-insert-flight-segments
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO flight_segment (flight_id, origin_airport_id, destination_airport_id, segment_number, scheduled_departure_at, scheduled_arrival_at) VALUES
+              ((SELECT flight_id FROM flight WHERE flight_number = 'AV101' AND service_date = '2026-05-01'), (SELECT airport_id FROM airport WHERE iata_code = 'BOG'), (SELECT airport_id FROM airport WHERE iata_code = 'MIA'), 1, '2026-05-01 08:00:00+00', '2026-05-01 12:00:00+00'),
+              ((SELECT flight_id FROM flight WHERE flight_number = 'AV201' AND service_date = '2026-05-01'), (SELECT airport_id FROM airport WHERE iata_code = 'BOG'), (SELECT airport_id FROM airport WHERE iata_code = 'MAD'), 1, '2026-05-01 22:00:00+00', '2026-05-02 14:00:00+00'),
+              ((SELECT flight_id FROM flight WHERE flight_number = 'LA301' AND service_date = '2026-05-02'), (SELECT airport_id FROM airport WHERE iata_code = 'BOG'), (SELECT airport_id FROM airport WHERE iata_code = 'MIA'), 1, '2026-05-02 10:00:00+00', '2026-05-02 14:00:00+00');

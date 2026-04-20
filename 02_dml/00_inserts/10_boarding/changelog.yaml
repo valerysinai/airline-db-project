@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-57-insert-boarding-groups
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO boarding_group (group_code, group_name, sequence_no) VALUES
+              ('GRP1', 'Grupo 1 - Prioritario', 1),
+              ('GRP2', 'Grupo 2 - Ejecutiva',   2),
+              ('GRP3', 'Grupo 3 - Económica',   3);
+
+  - changeSet:
+      id: dml-58-insert-checkin-statuses
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO check_in_status (status_code, status_name) VALUES
+              ('PENDING',   'Pendiente'),
+              ('COMPLETED', 'Completado'),
+              ('CANCELLED', 'Cancelado');
+
+  - changeSet:
+      id: dml-59-insert-checkins
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO check_in (ticket_segment_id, check_in_status_id, boarding_group_id, checked_in_at) VALUES
+              ((SELECT ticket_segment_id FROM ticket_segment WHERE ticket_id = (SELECT ticket_id FROM ticket WHERE ticket_number = 'TKT-0001-2026') AND segment_sequence_no = 1), (SELECT check_in_status_id FROM check_in_status WHERE status_code = 'COMPLETED'), (SELECT boarding_group_id FROM boarding_group WHERE group_code = 'GRP1'), now()),
+              ((SELECT ticket_segment_id FROM ticket_segment WHERE ticket_id = (SELECT ticket_id FROM ticket WHERE ticket_number = 'TKT-0002-2026') AND segment_sequence_no = 1), (SELECT check_in_status_id FROM check_in_status WHERE status_code = 'COMPLETED'), (SELECT boarding_group_id FROM boarding_group WHERE group_code = 'GRP3'), now());
+
+  - changeSet:
+      id: dml-60-insert-boarding-passes
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO boarding_pass (check_in_id, boarding_pass_code, barcode_value, issued_at) VALUES
+              ((SELECT check_in_id FROM check_in WHERE ticket_segment_id = (SELECT ticket_segment_id FROM ticket_segment WHERE ticket_id = (SELECT ticket_id FROM ticket WHERE ticket_number = 'TKT-0001-2026') AND segment_sequence_no = 1)), 'BP-001-2026', 'BC-AV101-001-2026', now()),
+              ((SELECT check_in_id FROM check_in WHERE ticket_segment_id = (SELECT ticket_segment_id FROM ticket_segment WHERE ticket_id = (SELECT ticket_id FROM ticket WHERE ticket_number = 'TKT-0002-2026') AND segment_sequence_no = 1)), 'BP-002-2026', 'BC-AV101-002-2026', now());

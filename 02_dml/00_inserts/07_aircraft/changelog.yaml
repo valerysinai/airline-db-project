@@ -1,0 +1,83 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-35-insert-manufacturers
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO aircraft_manufacturer (manufacturer_name) VALUES
+              ('Boeing'),
+              ('Airbus'),
+              ('Embraer');
+
+  - changeSet:
+      id: dml-36-insert-aircraft-models
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO aircraft_model (aircraft_manufacturer_id, model_code, model_name, max_range_km) VALUES
+              ((SELECT aircraft_manufacturer_id FROM aircraft_manufacturer WHERE manufacturer_name = 'Boeing'),  'B738', 'Boeing 737-800',  5765),
+              ((SELECT aircraft_manufacturer_id FROM aircraft_manufacturer WHERE manufacturer_name = 'Airbus'),  'A320', 'Airbus A320',     6150),
+              ((SELECT aircraft_manufacturer_id FROM aircraft_manufacturer WHERE manufacturer_name = 'Airbus'),  'A330', 'Airbus A330-200', 13400),
+              ((SELECT aircraft_manufacturer_id FROM aircraft_manufacturer WHERE manufacturer_name = 'Embraer'), 'E190', 'Embraer E190',    4537);
+
+  - changeSet:
+      id: dml-37-insert-cabin-classes
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO cabin_class (class_code, class_name) VALUES
+              ('ECO', 'Económica'),
+              ('BUS', 'Ejecutiva'),
+              ('FIR', 'Primera Clase');
+
+  - changeSet:
+      id: dml-38-insert-aircraft
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO aircraft (airline_id, aircraft_model_id, registration_number, serial_number, in_service_on) VALUES
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT aircraft_model_id FROM aircraft_model WHERE model_code = 'A320'), 'HK-5200', 'SN-AV-001', '2018-03-01'),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AV'), (SELECT aircraft_model_id FROM aircraft_model WHERE model_code = 'A330'), 'HK-5201', 'SN-AV-002', '2019-06-15'),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'LA'), (SELECT aircraft_model_id FROM aircraft_model WHERE model_code = 'B738'), 'CC-BAA',  'SN-LA-001', '2017-01-10'),
+              ((SELECT airline_id FROM airline WHERE airline_code = 'AA'), (SELECT aircraft_model_id FROM aircraft_model WHERE model_code = 'B738'), 'N12345',  'SN-AA-001', '2016-05-20');
+
+  - changeSet:
+      id: dml-39-insert-aircraft-cabins
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO aircraft_cabin (aircraft_id, cabin_class_id, cabin_code, deck_number) VALUES
+              ((SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5200'), (SELECT cabin_class_id FROM cabin_class WHERE class_code = 'ECO'), 'ECO-1', 1),
+              ((SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5200'), (SELECT cabin_class_id FROM cabin_class WHERE class_code = 'BUS'), 'BUS-1', 1),
+              ((SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5201'), (SELECT cabin_class_id FROM cabin_class WHERE class_code = 'ECO'), 'ECO-1', 1),
+              ((SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5201'), (SELECT cabin_class_id FROM cabin_class WHERE class_code = 'BUS'), 'BUS-1', 1),
+              ((SELECT aircraft_id FROM aircraft WHERE registration_number = 'CC-BAA'),  (SELECT cabin_class_id FROM cabin_class WHERE class_code = 'ECO'), 'ECO-1', 1);
+
+  - changeSet:
+      id: dml-40-insert-aircraft-seats
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO aircraft_seat (aircraft_cabin_id, seat_row_number, seat_column_code, is_window, is_aisle, is_exit_row) VALUES
+              ((SELECT aircraft_cabin_id FROM aircraft_cabin WHERE cabin_code = 'BUS-1' AND aircraft_id = (SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5200')), 1, 'A', true,  false, false),
+              ((SELECT aircraft_cabin_id FROM aircraft_cabin WHERE cabin_code = 'BUS-1' AND aircraft_id = (SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5200')), 1, 'B', false, false, false),
+              ((SELECT aircraft_cabin_id FROM aircraft_cabin WHERE cabin_code = 'ECO-1' AND aircraft_id = (SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5200')), 10, 'A', true, false, false),
+              ((SELECT aircraft_cabin_id FROM aircraft_cabin WHERE cabin_code = 'ECO-1' AND aircraft_id = (SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5200')), 10, 'B', false, false, false),
+              ((SELECT aircraft_cabin_id FROM aircraft_cabin WHERE cabin_code = 'ECO-1' AND aircraft_id = (SELECT aircraft_id FROM aircraft WHERE registration_number = 'HK-5200')), 10, 'C', false, true,  false);
+
+  - changeSet:
+      id: dml-41-insert-maintenance-types
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO maintenance_type (type_code, type_name) VALUES
+              ('ROUTINE',   'Mantenimiento Rutinario'),
+              ('CORRECTIVE','Mantenimiento Correctivo'),
+              ('PREVENTIVE','Mantenimiento Preventivo');

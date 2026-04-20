@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-61-insert-payment-statuses
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO payment_status (status_code, status_name) VALUES
+              ('PENDING',   'Pendiente'),
+              ('APPROVED',  'Aprobado'),
+              ('REJECTED',  'Rechazado'),
+              ('REFUNDED',  'Reembolsado');
+
+  - changeSet:
+      id: dml-62-insert-payment-methods
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO payment_method (method_code, method_name) VALUES
+              ('CREDIT_CARD', 'Tarjeta de Crédito'),
+              ('DEBIT_CARD',  'Tarjeta Débito'),
+              ('PSE',         'PSE'),
+              ('CASH',        'Efectivo');
+
+  - changeSet:
+      id: dml-63-insert-payments
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO payment (sale_id, payment_status_id, payment_method_id, currency_id, payment_reference, amount) VALUES
+              ((SELECT sale_id FROM sale WHERE sale_code = 'SALE-001-2026'), (SELECT payment_status_id FROM payment_status WHERE status_code = 'APPROVED'), (SELECT payment_method_id FROM payment_method WHERE method_code = 'CREDIT_CARD'), (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'PAY-001-2026', 350.00),
+              ((SELECT sale_id FROM sale WHERE sale_code = 'SALE-002-2026'), (SELECT payment_status_id FROM payment_status WHERE status_code = 'APPROVED'), (SELECT payment_method_id FROM payment_method WHERE method_code = 'PSE'),         (SELECT currency_id FROM currency WHERE iso_currency_code = 'USD'), 'PAY-002-2026', 250.00);
+
+  - changeSet:
+      id: dml-64-insert-payment-transactions
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO payment_transaction (payment_id, transaction_reference, transaction_type, transaction_amount, processed_at) VALUES
+              ((SELECT payment_id FROM payment WHERE payment_reference = 'PAY-001-2026'), 'TRX-001-2026', 'AUTH',    350.00, now()),
+              ((SELECT payment_id FROM payment WHERE payment_reference = 'PAY-001-2026'), 'TRX-002-2026', 'CAPTURE', 350.00, now()),
+              ((SELECT payment_id FROM payment WHERE payment_reference = 'PAY-002-2026'), 'TRX-003-2026', 'AUTH',    250.00, now()),
+              ((SELECT payment_id FROM payment WHERE payment_reference = 'PAY-002-2026'), 'TRX-004-2026', 'CAPTURE', 250.00, now());

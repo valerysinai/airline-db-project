@@ -1,0 +1,104 @@
+databaseChangeLog:
+  - changeSet:
+      id: dml-01-insert-timezones
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO time_zone (time_zone_name, utc_offset_minutes) VALUES
+              ('America/Bogota', -300),
+              ('America/New_York', -300),
+              ('Europe/London', 0),
+              ('Europe/Madrid', 60),
+              ('Asia/Tokyo', 540);
+
+  - changeSet:
+      id: dml-02-insert-continents
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO continent (continent_code, continent_name) VALUES
+              ('AME', 'América'),
+              ('EUR', 'Europa'),
+              ('ASI', 'Asia'),
+              ('AFR', 'África'),
+              ('OCE', 'Oceanía');
+
+  - changeSet:
+      id: dml-03-insert-currencies
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO currency (iso_currency_code, currency_name, currency_symbol, minor_units) VALUES
+              ('COP', 'Peso Colombiano', '$', 2),
+              ('USD', 'Dólar Estadounidense', '$', 2),
+              ('EUR', 'Euro', '€', 2),
+              ('GBP', 'Libra Esterlina', '£', 2),
+              ('JPY', 'Yen Japonés', '¥', 0);
+
+  - changeSet:
+      id: dml-04-insert-countries
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO country (continent_id, iso_alpha2, iso_alpha3, country_name) VALUES
+              ((SELECT continent_id FROM continent WHERE continent_code = 'AME'), 'CO', 'COL', 'Colombia'),
+              ((SELECT continent_id FROM continent WHERE continent_code = 'AME'), 'US', 'USA', 'Estados Unidos'),
+              ((SELECT continent_id FROM continent WHERE continent_code = 'EUR'), 'ES', 'ESP', 'España'),
+              ((SELECT continent_id FROM continent WHERE continent_code = 'EUR'), 'GB', 'GBR', 'Reino Unido'),
+              ((SELECT continent_id FROM continent WHERE continent_code = 'ASI'), 'JP', 'JPN', 'Japón');
+
+  - changeSet:
+      id: dml-05-insert-state-provinces
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO state_province (country_id, state_code, state_name) VALUES
+              ((SELECT country_id FROM country WHERE iso_alpha2 = 'CO'), 'HUI', 'Huila'),
+              ((SELECT country_id FROM country WHERE iso_alpha2 = 'CO'), 'CUN', 'Cundinamarca'),
+              ((SELECT country_id FROM country WHERE iso_alpha2 = 'US'), 'FL', 'Florida'),
+              ((SELECT country_id FROM country WHERE iso_alpha2 = 'ES'), 'MAD', 'Madrid'),
+              ((SELECT country_id FROM country WHERE iso_alpha2 = 'GB'), 'ENG', 'Inglaterra');
+
+  - changeSet:
+      id: dml-06-insert-cities
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO city (state_province_id, time_zone_id, city_name) VALUES
+              ((SELECT state_province_id FROM state_province WHERE state_code = 'HUI'), (SELECT time_zone_id FROM time_zone WHERE time_zone_name = 'America/Bogota'), 'Neiva'),
+              ((SELECT state_province_id FROM state_province WHERE state_code = 'CUN'), (SELECT time_zone_id FROM time_zone WHERE time_zone_name = 'America/Bogota'), 'Bogotá'),
+              ((SELECT state_province_id FROM state_province WHERE state_code = 'FL'),  (SELECT time_zone_id FROM time_zone WHERE time_zone_name = 'America/New_York'), 'Miami'),
+              ((SELECT state_province_id FROM state_province WHERE state_code = 'MAD'), (SELECT time_zone_id FROM time_zone WHERE time_zone_name = 'Europe/Madrid'), 'Madrid'),
+              ((SELECT state_province_id FROM state_province WHERE state_code = 'ENG'), (SELECT time_zone_id FROM time_zone WHERE time_zone_name = 'Europe/London'), 'Londres');
+
+  - changeSet:
+      id: dml-07-insert-districts
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO district (city_id, district_name) VALUES
+              ((SELECT city_id FROM city WHERE city_name = 'Neiva'), 'Centro'),
+              ((SELECT city_id FROM city WHERE city_name = 'Bogotá'), 'Chapinero'),
+              ((SELECT city_id FROM city WHERE city_name = 'Miami'), 'Downtown'),
+              ((SELECT city_id FROM city WHERE city_name = 'Madrid'), 'Centro'),
+              ((SELECT city_id FROM city WHERE city_name = 'Londres'), 'Westminster');
+
+  - changeSet:
+      id: dml-08-insert-addresses
+      author: valerysinai
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO address (district_id, address_line_1, postal_code, latitude, longitude) VALUES
+              ((SELECT district_id FROM district WHERE district_name = 'Centro' AND city_id = (SELECT city_id FROM city WHERE city_name = 'Neiva')), 'Calle 5 # 4-30', '410010', 2.9273, -75.2819),
+              ((SELECT district_id FROM district WHERE district_name = 'Chapinero'), 'Carrera 7 # 32-16', '110231', 4.6486, -74.0570),
+              ((SELECT district_id FROM district WHERE district_name = 'Downtown'), '1000 NW 42nd Ave', '33126', 25.7959, -80.2870),
+              ((SELECT district_id FROM district WHERE district_name = 'Centro' AND city_id = (SELECT city_id FROM city WHERE city_name = 'Madrid')), 'Calle Gran Vía 1', '28013', 40.4200, -3.7050),
+              ((SELECT district_id FROM district WHERE district_name = 'Westminster'), '1 London Bridge', 'SE1 9BG', 51.5074, -0.1278);
